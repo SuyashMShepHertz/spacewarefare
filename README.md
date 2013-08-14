@@ -12,3 +12,5 @@ To optimize network load, the player moves in a **grid of 25x25 pixels**, hence 
 Whenever player clicks, bullet is shot and a blast animation is played. This information is **not exhcanged** until the player shoots the other player. On getting a hit from other player health is reduced. Bullets are limited, hence to shoot them you have to collect bullets.
 
 The objects available are placed usign **AppWarp Room Properties**. Whenever a player picks an object he/she places it somewhere else and **updates the properties** with new position of that object.
+
+![](https://dl.dropboxusercontent.com/u/61084350/SpaceWarFareScreen.png)
