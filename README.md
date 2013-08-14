@@ -7,8 +7,8 @@ Currently, there is only one room availabe, all users join this room. Player can
 
 There are different objects like bullets, health and diamonds that users can pick.
 
-To optimize network load, the player moves in a grid of 25x25 pixels, hence I onlysend message for movement when player moves from one block to another.
+To optimize network load, the player moves in a grid of 25x25 pixels, hence I only send message for movement when player moves from one block to another.
 
-Whenever player click, bullet is shot and a blast animation is played. This information is not exhcanged until the player shoots the other player. On getting a hit from other player health is reduced. Bullets are limited, hence to shoot them you have to collect bullets.
+Whenever player clicks, bullet is shot and a blast animation is played. This information is not exhcanged until the player shoots the other player. On getting a hit from other player health is reduced. Bullets are limited, hence to shoot them you have to collect bullets.
 
 The objects available are placed usign properties. Whenever a player picks an object he/she places it somewhere else and updates the properties with new position of that object.
