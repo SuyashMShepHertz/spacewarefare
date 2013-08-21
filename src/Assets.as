@@ -22,5 +22,11 @@ package
 		
 		[Embed(source = "../assets/images/tileset.png")] 
 		public static var TileSheet:Class;
+		
+		[Embed(source = "../assets/images/title.png")] 
+		public static var title:Class;
+		
+		[Embed(source = "../assets/images/gameover.png")] 
+		public static var gameOver:Class;
 	}
 }

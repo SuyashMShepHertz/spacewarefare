@@ -73,7 +73,7 @@ class roomListener implements RoomRequestListener
 	}
 	public function onUnsubscribeRoomDone(event:Room):void
 	{
-	
+		client.leaveRoom(event.roomId);
 	}
 	public function onJoinRoomDone(event:Room):void
 	{
@@ -181,6 +181,9 @@ package
 {
 	import com.adobe.serialization.json.JSON;
 	import com.shephertz.appwarp.WarpClient;
+	import com.shephertz.appwarp.types.ResultCode;
+	
+	import flash.external.ExternalInterface;
 
 	public class AppWarp
 	{	
@@ -200,7 +203,7 @@ package
 			return randomChar;
 		}
 
-		public static function connect(c:Object):void
+		public static function connect(c:Object,id:String):void
 		{
 			caller = c;
 			if(Connected == false)
@@ -209,8 +212,17 @@ package
 				client = WarpClient.getInstance();
 				_connectionlistener = new connectionListener(caller);
 				client.setConnectionRequestListener(_connectionlistener);
-				User = generateRandomString(10);
+				if(id == "")
+					User = generateRandomString(10);
+				else
+					User = id;
+				
+				ExternalInterface.call("console.log",User);
 				client.connect(User);
+			}
+			else
+			{
+				caller.connectDone(ResultCode.success);
 			}
 		}
 		
@@ -218,6 +230,11 @@ package
 		{
 			_roomlistener = new roomListener(roomId,caller);
 			client.setRoomRequestListener(_roomlistener);
+		}
+		
+		public static function leave(roomId:String):void
+		{
+			client.unsubscribeRoom(roomId);
 		}
 		
 		public static function startListening():void

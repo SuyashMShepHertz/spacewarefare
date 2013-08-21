@@ -14,7 +14,6 @@ package screens
 	import org.flixel.FlxObject;
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxRect;
-	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
 	import org.flixel.FlxText;
 	
@@ -26,9 +25,9 @@ package screens
 		private const Height:int = 480;
 		private var tileWidth:int = 25;
 		
-		private var roomID:String = "410174383";
-		private var remote:Array = new Array();
-		private var remoteMsg:Array = new Array();
+		private var roomID:String;
+		private var remote:Array;
+		private var remoteMsg:Array;
 		private var msg:FlxText;
 		private var youLable:FlxText;
 		private var itemsFlx:FlxGroup;
@@ -36,9 +35,18 @@ package screens
 		private var score:FlxText;
 		private var BulletsFlx:FlxGroup;
 		
-		private var Health:int = 10;
-		private var Bullets:int = 0;
-		private var Points:int = 0;
+		private var Health:int;
+		private var Bullets:int;
+		private var Points:int;
+		
+		private var user:String;
+		private var name:String;
+		
+		public function Game(u:String,n:String)
+		{
+			user = u;
+			name = n;
+		}
 		
 		override public function create():void
 		{
@@ -54,6 +62,12 @@ package screens
 		
 		public function setup():void
 		{
+			roomID = "410174383";
+			remote = new Array();
+			remoteMsg = new Array();
+			Health = 10;
+			Bullets = 100;
+			Points = 0;
 			FlxG.mouse.show();
 			
 			world = new World();
@@ -61,7 +75,11 @@ package screens
 			
 			player = new Character(1,1,0,0,Width,Height);
 			add(player);
-			youLable = new FlxText(player.x,player.y-8,32,"You");
+			if(name == "")
+				youLable = new FlxText(player.x,player.y-8,32,"You");
+			else
+				youLable = new FlxText(player.x,player.y-8,64,name.search(" ") != -1 ? name.substring(0,name.search(" ")) : name);
+			
 			add(youLable);
 			
 			FlxG.worldBounds = new FlxRect(0,0,Width,Height);
@@ -78,12 +96,12 @@ package screens
 			BulletsFlx = new FlxGroup();
 			add(BulletsFlx)
 			
-			score = new FlxText(Width-128,0,128,"Score : "+Points+"\nHealth : "+Health+"\nBullets : "+Bullets);
+			score = new FlxText(Width/2-128,0,128,"Score : "+Points+"\nHealth : "+Health+"\nBullets : "+Bullets);
 			score.scrollFactor.x = score.scrollFactor.y = 0;
 			score.alignment = "right";
 			add(score);
 			
-			AppWarp.connect(this);
+			AppWarp.connect(this,user);
 		}
 		
 		public function updateGame():void
@@ -113,7 +131,7 @@ package screens
 			youLable.x = player.x;
 			youLable.y = player.y - 10;
 			
-			if(FlxG.mouse.justReleased())
+			if(FlxG.mouse.justReleased() && Bullets > 0)
 			{
 				var shot:Bullet = new Bullet(BulletsFlx,player.x+12,player.y+12,FlxG.mouse.x,FlxG.mouse.y,makeBlast);
 				Bullets -= 1;
@@ -129,6 +147,13 @@ package screens
 						}
 					}
 				}
+			}
+			
+			if(Health <= 0)
+			{
+				AppWarp.leave(roomID);
+				kill();
+				FlxG.switchState(new GameOver());
 			}
 		}
 		
@@ -165,11 +190,20 @@ package screens
 				{
 					if(obj.p == AppWarp.getUser())
 					{
-						Health -= 1;
-						score.text = "Score : "+Points+"\nHealth : "+Health+"\nBullets : "+Bullets;
-						var shot:Bullet = new Bullet(BulletsFlx,remote[sender].x,remote[sender].y,player.x+12,player.y+12, makeBlast);
+						try
+						{
+							Health -= 1;
+							score.text = "Score : "+Points+"\nHealth : "+Health+"\nBullets : "+Bullets;
+							var shot:Bullet = new Bullet(BulletsFlx,remote[sender].x,remote[sender].y,player.x+12,player.y+12, makeBlast);
+						}
+						catch(e)
+						{
+							
+						}
 					}
 				}
+				
+				trace("Already Added----------------------------------------------------------------------------");
 			}
 			else
 			{
@@ -205,11 +239,13 @@ package screens
 			
 			if(item.ID == 1)
 			{
-				Health += 3;
+				Health += 1;
+				Points += 10;
 			}
 			else if(item.ID == 2)
 			{
 				Bullets += 3;
+				Points += 10;
 			}
 			else
 			{
@@ -228,7 +264,7 @@ package screens
 			if(user in remote)
 			{
 				remote[user].kill();
-				remote.splice(remote.indexOf(remote[user]),1);
+				delete remote[user];
 			}
 		}
 	}
