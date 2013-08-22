@@ -22,6 +22,7 @@ var INITIALIZED:Boolean = false;
 var client:WarpClient;
 var State:int = 0;
 var User:String;
+var Name:String;
 
 class connectionListener implements ConnectionRequestListener
 {	
@@ -45,6 +46,7 @@ class connectionListener implements ConnectionRequestListener
 	public function onDisConnectDone(res:int):void
 	{
 		Connected = false;
+		caller.disconnectDone(res);
 	}
 }
 
@@ -183,7 +185,7 @@ package
 	import com.shephertz.appwarp.WarpClient;
 	import com.shephertz.appwarp.types.ResultCode;
 	
-	import flash.external.ExternalInterface;
+	//import flash.external.ExternalInterface;
 
 	public class AppWarp
 	{	
@@ -203,9 +205,10 @@ package
 			return randomChar;
 		}
 
-		public static function connect(c:Object,id:String):void
+		public static function connect(c:Object,id:String,username:String):String
 		{
 			caller = c;
+			Name = username;
 			if(Connected == false)
 			{
 				WarpClient.initialize(APIKEY, SECRETEKEY);
@@ -217,13 +220,15 @@ package
 				else
 					User = id;
 				
-				ExternalInterface.call("console.log",User);
+				//ExternalInterface.call("console.log",User);
 				client.connect(User);
 			}
 			else
 			{
 				caller.connectDone(ResultCode.success);
 			}
+			
+			return User;
 		}
 		
 		public static function join(roomId:String):void
@@ -257,6 +262,10 @@ package
 			obj.type = 1;
 			obj.x = x;
 			obj.y = y;
+			if(Name != "")
+				obj.name = Name;
+			else 
+				obj.name = User;
 			
 			Send(obj);
 		}
@@ -266,6 +275,10 @@ package
 			var obj:Object = new Object;
 			obj.type = 2;
 			obj.p = player;
+			if(Name != "")
+				obj.name = Name;
+			else 
+				obj.name = User;
 			
 			Send(obj);
 		}

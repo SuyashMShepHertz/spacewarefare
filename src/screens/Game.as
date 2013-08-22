@@ -28,8 +28,10 @@ package screens
 		private var roomID:String;
 		private var remote:Array;
 		private var remoteMsg:Array;
+		private var remoteUserNames:Array;
 		private var msg:FlxText;
 		private var youLable:FlxText;
+		//private var log:FlxText;
 		private var itemsFlx:FlxGroup;
 		private var properties:Object;
 		private var score:FlxText;
@@ -65,8 +67,9 @@ package screens
 			roomID = "410174383";
 			remote = new Array();
 			remoteMsg = new Array();
+			remoteUserNames = new Array
 			Health = 10;
-			Bullets = 100;
+			Bullets = 5;
 			Points = 0;
 			FlxG.mouse.show();
 			
@@ -75,12 +78,6 @@ package screens
 			
 			player = new Character(1,1,0,0,Width,Height);
 			add(player);
-			if(name == "")
-				youLable = new FlxText(player.x,player.y-8,32,"You");
-			else
-				youLable = new FlxText(player.x,player.y-8,64,name.search(" ") != -1 ? name.substring(0,name.search(" ")) : name);
-			
-			add(youLable);
 			
 			FlxG.worldBounds = new FlxRect(0,0,Width,Height);
 			FlxG.camera.follow(player);
@@ -89,6 +86,10 @@ package screens
 			msg = new FlxText(0,0,128,"Connecting...");
 			msg.scrollFactor.x = msg.scrollFactor.y = 0;
 			add(msg);
+			
+			//log = new FlxText(0,8,128,"");
+			//log.scrollFactor.x = log.scrollFactor.y = 0;
+			//add(log);
 
 			itemsFlx = new FlxGroup();
 			add(itemsFlx);
@@ -101,7 +102,14 @@ package screens
 			score.alignment = "right";
 			add(score);
 			
-			AppWarp.connect(this,user);
+			user = AppWarp.connect(this,user,name);
+			
+			if(name == "")
+				youLable = new FlxText(player.x,player.y-8,64,user);
+			else
+				youLable = new FlxText(player.x,player.y-8,64,name.search(" ") != -1 ? name.substring(0,name.search(" ")) : name);
+			
+			add(youLable);
 		}
 		
 		public function updateGame():void
@@ -128,6 +136,12 @@ package screens
 				}
 			}
 			
+			for (var senderName:String in remoteUserNames)
+			{
+				remoteUserNames[senderName].x = remote[senderName].x;
+				remoteUserNames[senderName].y = remote[senderName].y-10;
+			}
+			
 			youLable.x = player.x;
 			youLable.y = player.y - 10;
 			
@@ -143,6 +157,9 @@ package screens
 					{
 						if(FlxG.mouse.y >= remote[sender].y && FlxG.mouse.y <= remote[sender].y+remote[sender].height)
 						{
+							
+							Points += 100;
+							score.text = "Score : "+Points+"\nHealth : "+Health+"\nBullets : "+Bullets;
 							AppWarp.SendAttack(sender);
 						}
 					}
@@ -164,6 +181,15 @@ package screens
 				msg.text = "Joining Game...";
 				AppWarp.join(roomID);		
 			}
+			else
+			{
+				msg.text = "Not Connected";
+			}
+		}
+		
+		public function disconnectDone(res:int):void
+		{
+			msg.text = "DisConnected";
 		}
 		
 		public function joinDone(res:int):void
@@ -173,6 +199,7 @@ package screens
 				msg.text = "Connected";
 				AppWarp.startListening();
 				AppWarp.getRoomInfo(roomID);
+				//AppWarp.setProp(roomID);
 			}
 		}
 		
@@ -185,6 +212,7 @@ package screens
 					obj.sender = sender;
 					//remote[sender].moveXY(obj.x,obj.y);
 					remoteMsg.push(obj);
+					//log.text = obj.name + " Moved";
 				}
 				else if(obj.type == 2)
 				{
@@ -200,16 +228,22 @@ package screens
 						{
 							
 						}
+						
+						//log.text = obj.name + " Shot You";
 					}
 				}
-				
-				trace("Already Added----------------------------------------------------------------------------");
 			}
 			else
 			{
 				var p:Character = new Character(obj.x/tileWidth,obj.y/tileWidth,0,0,Width,Height);
 				add(p);	
 				remote[sender] = p;
+				
+				var rname:FlxText = new FlxText(obj.x/tileWidth,obj.y/tileWidth,64,obj.name.search(" ") != -1 ? obj.name.substring(0,obj.name.search(" ")) : obj.name);
+				add(rname);
+				remoteUserNames[sender] = rname;
+				
+				//log.text = obj.name + " Joined";
 			}
 		}
 		
@@ -263,7 +297,11 @@ package screens
 		{
 			if(user in remote)
 			{
+				//log.text = remoteUserNames[user] + " Left";
+				
 				remote[user].kill();
+				remoteUserNames[user].kill();
+				delete remoteUserNames[user];
 				delete remote[user];
 			}
 		}

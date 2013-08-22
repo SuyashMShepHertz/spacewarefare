@@ -1,6 +1,6 @@
 package screens
 {
-	import flash.external.ExternalInterface;
+	//import flash.external.ExternalInterface;
 	
 	import org.flixel.FlxButton;
 	import org.flixel.FlxG;
@@ -36,17 +36,17 @@ package screens
 		
 		private function onInit(response:Object, fail:Object):void
 		{
-			trace("[Facebook] Initialised");
-			ExternalInterface.call("console.log","[Facebook] Initialised");
+			//trace("[Facebook] Initialised");
+			//ExternalInterface.call("console.log","[Facebook] Initialised");
 			if(response)
 			{
-				trace("[Facebook] Already Logged In");
-				ExternalInterface.call("console.log","[Facebook] Already Logged In");
+				//trace("[Facebook] Already Logged In");
+				//ExternalInterface.call("console.log","[Facebook] Already Logged In");
 			}
 			else
 			{
-				trace("[Facebook] Not Logged In");
-				ExternalInterface.call("console.log","[Facebook] Not Logged In");
+				//trace("[Facebook] Not Logged In");
+				//ExternalInterface.call("console.log","[Facebook] Not Logged In");
 			}
 			
 			startBtn = new FlxButton(0,128,"Start", Login);
@@ -65,8 +65,8 @@ package screens
 		{
 			if(response)
 			{
-				trace("[Facebook] Logging Successful");
-				ExternalInterface.call("console.log","[Facebook] Logging Successful");
+				//trace("[Facebook] Logging Successful");
+				//ExternalInterface.call("console.log","[Facebook] Logging Successful");
 				
 				startBtn.kill();
 				
@@ -84,8 +84,8 @@ package screens
 			}
 			else
 			{
-				trace("[Facebook] Logging Failed");
-				ExternalInterface.call("console.log","[Facebook] Logging Failed");
+				//trace("[Facebook] Logging Failed");
+				//ExternalInterface.call("console.log","[Facebook] Logging Failed");
 			}
 		}
 		
@@ -96,8 +96,8 @@ package screens
 		
 		private function onPosting(response:Object, fail:Object):void
 		{
-			trace("[Facebook] Posted");
-			ExternalInterface.call("console.log","[Facebook] Posted");
+			//trace("[Facebook] Posted");
+			//ExternalInterface.call("console.log","[Facebook] Posted");
 			shareBtn.label.text = "Shared";
 		}
 		

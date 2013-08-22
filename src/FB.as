@@ -2,22 +2,22 @@ package
 {
 	import com.facebook.graph.Facebook;
 	
-	import flash.external.ExternalInterface;
+	//import flash.external.ExternalInterface;
 
 	public class FB
 	{
 		
 		public function init(app_id:String,f:Function):void
 		{
-			trace("[Facebook] Initialising");
-			ExternalInterface.call("console.log","[Facebook] Initialising");
+			//trace("[Facebook] Initialising");
+			//ExternalInterface.call("console.log","[Facebook] Initialising");
 			Facebook.init(app_id,f);
 		}
 		
 		public function Login(f:Function):void
 		{
-			trace("[Facebook] Logging");
-			ExternalInterface.call("console.log","[Facebook] Logging");
+			//("[Facebook] Logging");
+			//ExternalInterface.call("console.log","[Facebook] Logging");
 			Facebook.login(f,new Array("publish_stream"));
 		}
 		

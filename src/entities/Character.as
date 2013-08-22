@@ -1,5 +1,6 @@
 package entities
 {
+	
 	import org.flixel.FlxG;
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxRect;
