@@ -31,7 +31,8 @@ package screens
 		private var remoteUserNames:Array;
 		private var msg:FlxText;
 		private var youLable:FlxText;
-		//private var log:FlxText;
+		private var log:FlxText;
+		private var logCount:int;
 		private var itemsFlx:FlxGroup;
 		private var properties:Object;
 		private var score:FlxText;
@@ -87,9 +88,10 @@ package screens
 			msg.scrollFactor.x = msg.scrollFactor.y = 0;
 			add(msg);
 			
-			//log = new FlxText(0,8,128,"");
-			//log.scrollFactor.x = log.scrollFactor.y = 0;
-			//add(log);
+			log = new FlxText(0,8,128,"");
+			log.scrollFactor.x = log.scrollFactor.y = 0;
+			add(log);
+			logCount = 0;
 
 			itemsFlx = new FlxGroup();
 			add(itemsFlx);
@@ -212,7 +214,8 @@ package screens
 					obj.sender = sender;
 					//remote[sender].moveXY(obj.x,obj.y);
 					remoteMsg.push(obj);
-					//log.text = obj.name + " Moved";
+					logCount += 1;
+					log.text = "["+logCount + "]" +obj.name + " Moved";
 				}
 				else if(obj.type == 2)
 				{
@@ -229,7 +232,8 @@ package screens
 							
 						}
 						
-						//log.text = obj.name + " Shot You";
+						logCount += 1;
+						log.text = "["+logCount + "]" + obj.name + " Shot You";
 					}
 				}
 			}
@@ -243,7 +247,8 @@ package screens
 				add(rname);
 				remoteUserNames[sender] = rname;
 				
-				//log.text = obj.name + " Joined";
+				logCount += 1;
+				log.text = "["+logCount + "]" + obj.name + " Joined";
 			}
 		}
 		
@@ -297,7 +302,8 @@ package screens
 		{
 			if(user in remote)
 			{
-				//log.text = remoteUserNames[user] + " Left";
+				logCount += 1;
+				log.text = "["+logCount + "]" + remoteUserNames[user] + " Left";
 				
 				remote[user].kill();
 				remoteUserNames[user].kill();
