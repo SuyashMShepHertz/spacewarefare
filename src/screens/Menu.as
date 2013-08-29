@@ -1,3 +1,4 @@
+
 package screens
 {
 	//import flash.external.ExternalInterface;
@@ -31,7 +32,7 @@ package screens
 			add(title);			
 			
 			fb = new FB();
-			fb.init("539928402722587",onInit);
+			fb.init("539928402722587",onInit);    
 		}
 		
 		private function onInit(response:Object, fail:Object):void
@@ -68,19 +69,23 @@ package screens
 				//trace("[Facebook] Logging Successful");
 				//ExternalInterface.call("console.log","[Facebook] Logging Successful");
 				
-				startBtn.kill();
-				
-				newBtn = new FlxButton(0,128,"New Game", newGame);
-				newBtn.x = 400/2 - newBtn.width/2;
-				add(newBtn);
-				
-				shareBtn = new FlxButton(0,128+32,"Share on FB", share);
-				shareBtn.x = 400/2 - shareBtn.width/2;
-				add(shareBtn);
-				
-				inviteBtn = new FlxButton(0,128+32+32,"Invite Friends", invite);
-				inviteBtn.x = 400/2 - inviteBtn.width/2;
-				add(inviteBtn);
+				try
+				{
+					startBtn.kill();
+					
+					newBtn = new FlxButton(0,128,"New Game", newGame);
+					newBtn.x = 400/2 - newBtn.width/2;
+					add(newBtn);
+					
+					shareBtn = new FlxButton(0,128+32,"Share on FB", share);
+					shareBtn.x = 400/2 - shareBtn.width/2;
+					//add(shareBtn);
+					
+					inviteBtn = new FlxButton(0,128+32+32,"Invite Friends", invite);
+					inviteBtn.x = 400/2 - inviteBtn.width/2;
+					//add(inviteBtn);
+				}
+				catch(e){}
 			}
 			else
 			{
@@ -121,7 +126,7 @@ package screens
 				user = response.id;
 				name = response.name;
 			}
-			kill();
+			//kill();
 			FlxG.switchState(new Game(user,name));
 		}
 	}

@@ -9,6 +9,7 @@ package screens
 	import entities.Item;
 	import entities.World;
 	
+	import org.flixel.FlxButton;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxObject;
@@ -37,6 +38,7 @@ package screens
 		private var properties:Object;
 		private var score:FlxText;
 		private var BulletsFlx:FlxGroup;
+		private var closeBtn:FlxButton;
 		
 		private var Health:int;
 		private var Bullets:int;
@@ -68,7 +70,7 @@ package screens
 			roomID = "410174383";
 			remote = new Array();
 			remoteMsg = new Array();
-			remoteUserNames = new Array
+			remoteUserNames = new Array();
 			Health = 10;
 			Bullets = 5;
 			Points = 0;
@@ -76,6 +78,14 @@ package screens
 			
 			world = new World();
 			world.create(this);
+			
+			closeBtn = new FlxButton(400-80,240-20,"Exit", function click():void{
+				Connector.leave(roomID);
+				//kill();
+				FlxG.switchState(new Menu());
+			});
+			closeBtn.scrollFactor.x = closeBtn.scrollFactor.y = 0; 
+			//add(closeBtn);
 			
 			player = new Character(1,1,0,0,Width,Height);
 			add(player);
@@ -104,7 +114,7 @@ package screens
 			score.alignment = "right";
 			add(score);
 			
-			user = AppWarp.connect(this,user,name);
+			user = Connector.connect(this,user,name);
 			
 			if(name == "")
 				youLable = new FlxText(player.x,player.y-8,64,user);
@@ -126,9 +136,15 @@ package screens
 				pos = player.move(Character.Down);
 			else if(FlxG.keys.RIGHT)
 				pos = player.move(Character.Right);
+			else if(FlxG.keys.ESCAPE)
+			{
+				Connector.leave(roomID);
+				//kill();
+				FlxG.switchState(new Menu());
+			}
 			
 			if(pos!=null)
-				AppWarp.SendMove(pos.x,pos.y);
+				Connector.SendMove(pos.x,pos.y);
 			
 			if(remoteMsg.length > 0)
 			{
@@ -162,7 +178,7 @@ package screens
 							
 							Points += 100;
 							score.text = "Score : "+Points+"\nHealth : "+Health+"\nBullets : "+Bullets;
-							AppWarp.SendAttack(sender);
+							Connector.SendAttack(sender);
 						}
 					}
 				}
@@ -170,8 +186,8 @@ package screens
 			
 			if(Health <= 0)
 			{
-				AppWarp.leave(roomID);
-				kill();
+				Connector.leave(roomID);
+				//kill();
 				FlxG.switchState(new GameOver());
 			}
 		}
@@ -181,7 +197,7 @@ package screens
 			if(res == ResultCode.success)
 			{
 				msg.text = "Joining Game...";
-				AppWarp.join(roomID);		
+				Connector.join(roomID);		
 			}
 			else
 			{
@@ -199,8 +215,7 @@ package screens
 			if(res == ResultCode.success)
 			{
 				msg.text = "Connected";
-				AppWarp.startListening();
-				AppWarp.getRoomInfo(roomID);
+				Connector.getRoomInfo(roomID);
 				//AppWarp.setProp(roomID);
 			}
 		}
@@ -215,25 +230,29 @@ package screens
 					//remote[sender].moveXY(obj.x,obj.y);
 					remoteMsg.push(obj);
 					logCount += 1;
-					log.text = "["+logCount + "]" +obj.name + " Moved";
+					try
+					{
+						log.text = "["+logCount + "]" +obj.name + " Moved";
+					}
+					catch(e){}	
 				}
 				else if(obj.type == 2)
 				{
-					if(obj.p == AppWarp.getUser())
+					if(obj.p == Connector.getUser())
 					{
 						try
 						{
 							Health -= 1;
 							score.text = "Score : "+Points+"\nHealth : "+Health+"\nBullets : "+Bullets;
 							var shot:Bullet = new Bullet(BulletsFlx,remote[sender].x,remote[sender].y,player.x+12,player.y+12, makeBlast);
+							
+							logCount += 1;
+							log.text = "["+logCount + "]" + obj.name + " Shot You";
 						}
 						catch(e)
 						{
 							
-						}
-						
-						logCount += 1;
-						log.text = "["+logCount + "]" + obj.name + " Shot You";
+						}						
 					}
 				}
 			}
@@ -247,8 +266,12 @@ package screens
 				add(rname);
 				remoteUserNames[sender] = rname;
 				
-				logCount += 1;
-				log.text = "["+logCount + "]" + obj.name + " Joined";
+				try
+				{
+					logCount += 1;
+					log.text = "["+logCount + "]" + obj.name + " Joined";	
+				}
+				catch(e){}
 			}
 		}
 		
@@ -293,7 +316,7 @@ package screens
 			
 			score.text = "Score : "+Points+"\nHealth : "+Health+"\nBullets : "+Bullets;
 			
-			AppWarp.placeItems(roomID,properties,"item"+item.ID,x,y);
+			Connector.placeItems(roomID,properties,"item"+item.ID,x,y);
 			itemsFlx.remove(item);
 			item.kill();
 		}
